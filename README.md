@@ -1,77 +1,276 @@
-Shelby Quickstart Guide
+# 🚀 Shelby Testnet RPC Node Guide
+
+<p align="center">
+
+![GitHub stars](https://img.shields.io/github/stars/manhdz9990/shelby-testnet-node-guide?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/manhdz9990/shelby-testnet-node-guide?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/manhdz9990/shelby-testnet-node-guide?style=for-the-badge)
+
+</p>
+
+A **complete step-by-step guide** to install and run a **Shelby Testnet RPC Node**.
+
+Shelby provides **verifiable global object storage for AI workloads**, powering the next generation of **AI and decentralized infrastructure**.
+
+This guide explains how to deploy a **Shelby RPC node using Docker**.
+
 ---
-Simple samples to start serving with Shelby
 
-## 📋 System Requirements
-* Node v22 or later
-* Linux or MacOS
+# 📑 Table of Contents
 
-## 📦 Installation
-**NOTE:** This repo requires the CLI for both [Shelby](https://docs.shelby.xyz/tools/cli) and [Aptos](https://aptos.dev/build/cli). Install these first if you haven't already.
-1. Fork this repository
-1. Clone to local filesystem
-1. Run `npm install` or equivalent
-1. Run `npm run build` or equivalent
+* Official Links
+* System Requirements
+* Step 1 — Update Server
+* Step 2 — Install Dependencies
+* Step 3 — Clone Shelby Node
+* Step 4 — Configure Node
+* Step 5 — Start RPC Node
+* Step 6 — Check Logs
+* Step 7 — Verify RPC
+* Useful Commands
+* About Shelby
+* Contributing
+* Support
+* Author
 
-## 🛠️ Setup
-Before working with the code in this repo, ensure that you've completed all of the steps in the [Shelby CLI Getting Started](https://docs.shelby.xyz/tools/cli) guide. This will give you access to the `shelby` command and simplify the steps described below.
+---
 
-## 💻 Usage
+# 🌐 Official Links
 
-The purpose of this repository is to introduce you to core Shelby concepts in an interactive way. After you have tried out all of the steps, you will have a basic understanding of how Shelby works. Please take a look at the code. Modify it as you see fit. Treat this repo as the starting point for your own Shelby integration. **Once you have created something, please share it with us in Discord. We would love to see what you are building!**
+Documentation
+https://docs.shelby.xyz/protocol/node-setup/testnet_rpc
 
-Example interactions included in this guide:
+Website
+https://shelby.xyz
 
-### 1. Development Account Config
+Twitter
+https://twitter.com/shelbyserves
 
-`npm run config`
+Discord
+https://discord.gg/shelbyserves
 
-**Executes code from `src/guide/config.ts`**
+---
 
-_Launch an interactive CLI that creates the configuration you want to use for integrating with Shelby._
+# 💻 System Requirements
 
-After running this command, you may notice the `.env` file we have generated. Next, fund your development address using the [ShelbyUSD faucet](https://docs.shelby.xyz/apis/faucet/shelbyusd) and [Aptos faucet](https://docs.shelby.xyz/apis/faucet/aptos) for Shelbynet: sign in, paste your address, and click the `Fund` button.
+## Minimum
 
-This `.env` file contains all of the config options needed to use Shelby:
-1. Account address — _The Aptos account that will pay for storage_
-1. Account private key — _The private key used to sign transactions_
-1. Aptos network name — _For now this will always be "devnet"_
-1. Shelby RPC node — _The host that your app uses for Shelby operations_
+| Resource | Requirement  |
+| -------- | ------------ |
+| CPU      | 4 Cores      |
+| RAM      | 8 GB         |
+| Storage  | 100 GB SSD   |
+| OS       | Ubuntu 22.04 |
 
-__REMINDER:__ _Do not use real private keys (or recovery phrases) for development. Use proper secret management in production._
+## Recommended
 
-### 2. Upload Blobs to Shelby
+| Resource | Requirement |
+| -------- | ----------- |
+| CPU      | 8 Cores     |
+| RAM      | 16 GB       |
+| Storage  | 500 GB SSD  |
 
-`npm run upload`
+---
 
-**Executes code from `src/guide/upload.ts`**
+# ⚙️ Step 1 — Update Server
 
-_Launch an interactive CLI that asks you to select a file for upload as the specified blob name. Sample assets have been provided for your convenience._
+Update system packages.
 
-After running this command, you will see output describing the data that you've just uploaded. Important concepts to note:
-1. Merkle root — _This hash can be used to later verify the integrity of uploaded data._
-1. Chunkset commitments — _How your data is encoded and stored durably on Shelby's decentralized network._
+```bash
+sudo apt update && sudo apt upgrade -y
+```
 
-For more information about these and other important concepts, please read the [Shelby whitepaper](https://shelby.xyz/whitepaper.pdf) — included in this repo under the `assets/` directory!
+---
 
-### 3. List the Blobs on Shelby
+# ⚙️ Step 2 — Install Dependencies
 
-`npm run list`
+Install required packages.
 
-_Launch an interactive CLI that asks which account's blobs you'd like to list._
+```bash
+sudo apt install curl git docker.io docker-compose -y
+```
 
-After running this command, you will see output describing the blobs that are currently stored on Shelby for the specified account. Remember: you provide the storage duration at time of upload, so you will not see blobs that have expired.
+Enable Docker.
 
-### 4. Download a Blob from Shelby
+```bash
+sudo systemctl enable docker
+sudo systemctl start docker
+```
 
-`npm run download`
+Verify Docker installation.
 
-**Executes code from `src/guide/download.ts`**
+```bash
+docker version
+```
 
-_Launch an interactive CLI that allows you to provide a blob name and destination for download to local filesystem._
+---
 
-## Development
-After completing the steps above, you now know everything necessary to start building your own integration with Shelby! Head over to `src/index.ts` for a simple stub that gives the Shelby whitepaper a round-trip ride as a blob. It utilizes the same `.env` file we created earlier for ease of getting started.
+# 📥 Step 3 — Clone Shelby Node Repository
 
-### Watch for Changes
-To watch for changes as you build, use `npm run dev`. This will start a long-running process that automatically re-compiles everything in `src/`
+Clone the official Shelby repository.
+
+```bash
+git clone https://github.com/shelbyxyz/shelby-node.git
+```
+
+Enter the directory.
+
+```bash
+cd shelby-node
+```
+
+---
+
+# ⚙️ Step 4 — Configure Node
+
+Copy the environment file.
+
+```bash
+cp .env.example .env
+```
+
+Edit configuration.
+
+```bash
+nano .env
+```
+
+Save and exit.
+
+---
+
+# 🚀 Step 5 — Start Shelby RPC Node
+
+Run the node using Docker.
+
+```bash
+docker compose up -d
+```
+
+Check running containers.
+
+```bash
+docker ps
+```
+
+If the container appears in the list, your node is running successfully.
+
+---
+
+# 📜 Step 6 — Check Logs
+
+Monitor node logs.
+
+```bash
+docker logs -f shelby-node
+```
+
+Press **CTRL + C** to exit logs.
+
+---
+
+# 🔎 Step 7 — Verify RPC Endpoint
+
+Open the RPC endpoint in your browser.
+
+```
+http://YOUR_SERVER_IP:8545
+```
+
+If the endpoint responds, the **RPC node is operational**.
+
+---
+
+# 🛠 Useful Commands
+
+## Stop Node
+
+```bash
+docker compose down
+```
+
+## Restart Node
+
+```bash
+docker compose restart
+```
+
+## Update Node
+
+```bash
+git pull
+docker compose down
+docker compose up -d
+```
+
+---
+
+# 📊 Check Node Status
+
+List running containers.
+
+```bash
+docker ps
+```
+
+View logs.
+
+```bash
+docker logs shelby-node
+```
+
+---
+
+# 🧠 About Shelby
+
+Shelby builds **verifiable infrastructure for AI data storage**.
+
+The protocol enables:
+
+• Global data availability
+• Verifiable storage proofs
+• Infrastructure for AI workloads
+• Scalable decentralized storage
+
+Shelby aims to become a **data layer for AI applications**.
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+You can help by:
+
+• Improving documentation
+• Submitting pull requests
+• Reporting issues
+
+---
+
+# ⭐ Support the Project
+
+If this guide helped you:
+
+⭐ Star this repository
+🍴 Fork the repository
+📢 Share it with the community
+
+---
+
+# 👤 Author
+
+**Manh100k Web3**
+
+Web3 Contributor
+Testnet Hunter
+Community Builder
+
+---
+
+# ⚠️ Disclaimer
+
+This guide is provided for **educational purposes only**.
+
+Always verify commands and refer to official documentation before running nodes.
+
